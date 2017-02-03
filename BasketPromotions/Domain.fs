@@ -2,15 +2,26 @@ module Domain
 
 type Sku = string
 type Price = int
-type Qty = int
+type Qty = uint16
+
+let createQty (n : int) : Qty =
+    if n < 0 then (uint16 0) else (uint16 n)
+
+type Promotion = {
+    promoQty: Qty
+    promoPrice: Price
+}
 
 type Product = {
     sku: Sku
     price: Price
+    promotion: Promotion option
 }
 
 type Event =
     | AddToBasket of Product * Qty
+
+ // VIEW MODELS
 
 type Line = {
     productSku: Sku
@@ -25,10 +36,28 @@ type Basket = {
 
 let empty = { lines = [] ; total = 0 }
 
+// super cool custom operator!
+let (*) (qty : Qty) (price : Price) : Price =
+    int qty * price
+
+let promotionedTotal quantity price promotion =
+    let promotionedQty = quantity / promotion.promoQty
+    let promotionedTotal = promotionedQty * promotion.promoPrice
+
+    let notPromotionedQty = quantity % promotion.promoQty
+    let notPromotionedTotal = notPromotionedQty * price
+
+    promotionedTotal + notPromotionedTotal
+
+let lineTotal quantity product =
+    match product.promotion with
+    | None -> quantity * product.price
+    | Some promotion -> promotionedTotal quantity product.price promotion
+
 let buildLine product quantity = {
     productSku = product.sku
     quantity = quantity
-    lineTotal = quantity * product.price
+    lineTotal = lineTotal quantity product
 }
 
 let basketTotal lines =
