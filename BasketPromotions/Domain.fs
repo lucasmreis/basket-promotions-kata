@@ -40,19 +40,19 @@ let empty = { lines = [] ; total = 0 }
 let (*) (qty : Qty) (price : Price) : Price =
     int qty * price
 
-let promotionedTotal quantity price promotion =
-    let promotionedQty = quantity / promotion.promoQty
-    let promotionedTotal = promotionedQty * promotion.promoPrice
+let promotedTotal quantity price promotion =
+    let promotedQty = quantity / promotion.promoQty
+    let promotedTotal = promotedQty * promotion.promoPrice
 
-    let notPromotionedQty = quantity % promotion.promoQty
-    let notPromotionedTotal = notPromotionedQty * price
+    let notPromotedQty = quantity % promotion.promoQty
+    let notPromotedTotal = notPromotedQty * price
 
-    promotionedTotal + notPromotionedTotal
+    promotedTotal + notPromotedTotal
 
 let lineTotal quantity product =
     match product.promotion with
     | None -> quantity * product.price
-    | Some promotion -> promotionedTotal quantity product.price promotion
+    | Some promotion -> promotedTotal quantity product.price promotion
 
 let buildLine product quantity = {
     productSku = product.sku

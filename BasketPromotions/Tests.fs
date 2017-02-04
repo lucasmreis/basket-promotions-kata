@@ -37,17 +37,17 @@ let tests =
 
             Expect.equal basket.lines.Length (int N + 1) "must have N lines"
 
-        testProperty "promotioned line total" <| fun (N : Qty) ->
+        testProperty "promoted line total" <| fun (N : Qty) ->
             let promoQty = N + (createQty 2)
             let promotion = { promoQty = promoQty ; promoPrice = 7 }
-            let promotioned = promotionedTotal promoQty 10 promotion
+            let promoted = promotedTotal promoQty 10 promotion
 
             let notPromoQty = N + (createQty 1)
-            let notPromotioned = promotionedTotal notPromoQty 10 promotion
+            let notPromoted = promotedTotal notPromoQty 10 promotion
 
-            let promotionedExpected = 7
-            let notPromotionedExpected = notPromoQty * 10
+            let promotedExpected = 7
+            let notPromotedExpected = notPromoQty * 10
 
-            Expect.equal promotioned promotionedExpected "same price as promotion"
-            Expect.equal notPromotioned notPromotionedExpected "multiplied by regular price"
+            Expect.equal promoted promotedExpected "same price as promotion"
+            Expect.equal notPromoted notPromotedExpected "multiplied by regular price"
     ]
