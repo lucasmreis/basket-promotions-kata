@@ -12,15 +12,15 @@ let productB = {
     sku = "b"
     price = 2
     promotion = Some {
-        promoQty = createQty 3
+        promoQty = 3us
         promoPrice = 5
     }
 }
 
 let events = [
-  AddToBasket(productA, createQty 5)
-  AddToBasket(productB, createQty 7)
-  AddToBasket(productA, createQty 4)
+  AddToBasket(productA, 5us)
+  AddToBasket(productB, 7us)
+  AddToBasket(productA, 4us)
 ]
 
 let myBasket = List.fold update empty events
