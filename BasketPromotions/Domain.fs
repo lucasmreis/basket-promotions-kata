@@ -4,9 +4,6 @@ type Sku = string
 type Price = int
 type Qty = uint16
 
-let createQty (n : int) : Qty =
-    if n < 0 then (uint16 0) else (uint16 n)
-
 type Promotion = {
     promoQty: Qty
     promoPrice: Price
@@ -21,7 +18,7 @@ type Product = {
 type Event =
     | AddToBasket of Product * Qty
 
- // VIEW MODELS
+ // READ MODELS
 
 type Line = {
     productSku: Sku

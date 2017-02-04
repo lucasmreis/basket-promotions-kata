@@ -19,7 +19,7 @@ let tests =
 
         testProperty "adding product multiple times downto the basket" <| fun (N : Qty ) ->
             let prod = { sku = "sku" ; price = 10 ; promotion = None }
-            let event = AddToBasket(prod, createQty 1)
+            let event = AddToBasket(prod, 1us) // notation for uint16
             let basket =
                 [1..(int N + 1)]
                 |> List.map (fun _ -> event)
@@ -29,7 +29,7 @@ let tests =
 
         testProperty "adding multiple products to the basket" <| fun (N : Qty ) ->
             let prod (num : int) = { sku = "sku" + num.ToString() ; price = 10 ; promotion = None }
-            let event (num : int) = AddToBasket(prod num, createQty 1)
+            let event (num : int) = AddToBasket(prod num, 1us)
             let basket =
                 [1..(int N + 1)]
                 |> List.map event
@@ -38,11 +38,11 @@ let tests =
             Expect.equal basket.lines.Length (int N + 1) "must have N lines"
 
         testProperty "promoted line total" <| fun (N : Qty) ->
-            let promoQty = N + (createQty 2)
+            let promoQty = N + 2us
             let promotion = { promoQty = promoQty ; promoPrice = 7 }
             let promoted = promotedTotal promoQty 10 promotion
 
-            let notPromoQty = N + (createQty 1)
+            let notPromoQty = N + 1us
             let notPromoted = promotedTotal notPromoQty 10 promotion
 
             let promotedExpected = 7
