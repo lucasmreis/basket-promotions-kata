@@ -21,6 +21,7 @@ let events = [
   AddToBasket(productA, 5us)
   AddToBasket(productB, 7us)
   AddToBasket(productA, 4us)
+  AddToBasket(productB, 1us)
 ]
 
 let myBasket = List.fold update empty events

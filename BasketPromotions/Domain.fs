@@ -20,24 +20,28 @@ type Event =
 
  // READ MODELS
 
+type ReadTotal =
+    | NotPromoted of Price
+    | Promoted of original: Price * discount: Price * final: Price
+
 type Line = {
     productSku: Sku
     quantity: Qty
-    lineTotal: Price
+    lineTotal: ReadTotal
 }
 
 type Basket = {
     lines: Line list
-    total: Price
+    total: ReadTotal
 }
 
-let empty = { lines = [] ; total = 0 }
+let empty = { lines = [] ; total = NotPromoted 0 }
 
 // super cool custom operator!
 let (*) (qty : Qty) (price : Price) : Price =
     int qty * price
 
-let promotedTotal quantity price promotion =
+let promotedFinalTotal quantity price promotion =
     let promotedQty = quantity / promotion.promoQty
     let promotedTotal = promotedQty * promotion.promoPrice
 
@@ -46,9 +50,17 @@ let promotedTotal quantity price promotion =
 
     promotedTotal + notPromotedTotal
 
+let promotedTotal quantity price promotion =
+    let final = promotedFinalTotal quantity price promotion
+    let original = quantity * price
+
+    if final <> original
+    then Promoted(original, original - final, final)
+    else NotPromoted(final)
+
 let lineTotal quantity product =
     match product.promotion with
-    | None -> quantity * product.price
+    | None -> NotPromoted(quantity * product.price)
     | Some promotion -> promotedTotal quantity product.price promotion
 
 let buildLine product quantity = {
@@ -57,10 +69,17 @@ let buildLine product quantity = {
     lineTotal = lineTotal quantity product
 }
 
+let sumTotals t1 t2 =
+    match t1, t2 with
+    | NotPromoted v1, NotPromoted v2 -> NotPromoted(v1 + v2)
+    | NotPromoted v, Promoted(o, d, f) -> Promoted(v + o, d, v + f)
+    | Promoted(o, d, f), NotPromoted v -> Promoted(v + o, d, v + f)
+    | Promoted(o1, d1, f1), Promoted(o2, d2, f2) -> Promoted(o1 + o2, d1 + d2, f1 + f2)
+
 let basketTotal lines =
     lines
     |> List.map (fun l -> l.lineTotal)
-    |> List.sum
+    |> List.fold sumTotals (NotPromoted 0)
 
 let addToBasket product quantity basket =
     let transformLine line =
